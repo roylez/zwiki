@@ -49,17 +49,6 @@ function! s:zettel_follow_local_link(line)
    call vimwiki#base#open_link(":e ", lnk)
 endfunction
 
-" returned string: [Title](YYYYMMDD-HHMMSS)
-function! s:make_note_link(l)
-   let line  = split(a:l, ':')
-   let id    = substitute(l:line[0], '^\(.*/\)\?\(.*\)\' . zwiki#ext(), '\2', 'g')
-   let title = substitute(l:line[-1], '^\#*\s\+', '', 'g')
-   let link  = "[" . title ."](". id .")"
-   call setline('.', getline('.') . link )
-   call cursor(line('.'), col('.') + len(link) )
-   call feedkeys('a', 'n')
-endfunction
-
 function! s:insert_backlinks() abort
    let current_fn_id = expand("%:t:r")
    let current_fn    = expand("%:t")
@@ -97,23 +86,5 @@ function! s:get_links()
    let all_links = substitute(@l, '\[\(.\{-}\)\](\(.\{-}\)\(\.md\|\.wiki\)\?)', '\2:   \1', 'g')
    return split(all_links, "\n")
 endfunction
-
-fun! s:fzf_insert_link()
-  call fzf#run({
-        \ 'source': 'rg --no-heading --smart-case "(#+\|title:)\s+" ',
-        \ 'sink': function('<sid>make_note_link'),
-        \ 'options': '--margin 15%,0',
-        \ 'dir': zwiki#path(),
-        \ 'down':  10})
-endfun
-
-augroup zettel
-  au!
-  autocmd FileType vimwiki inoremap <silent> [[ <esc>:call <sid>fzf_insert_link()<CR>'
-  autocmd FileType vimwiki nnoremap <Leader>f :Z<CR>
-  autocmd FileType vimwiki nnoremap <Leader>l :Zlinks<CR>
-  autocmd FileType vimwiki vnoremap z y:Ztab<CR>p
-  autocmd BufWritePost ??????-*.md silent :Zbacklink
-augroup END
 
 nnoremap <Leader>z :Z<CR>
