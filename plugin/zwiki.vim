@@ -86,5 +86,3 @@ function! s:get_links()
    let all_links = substitute(@l, '\[\(.\{-}\)\](\(.\{-}\)\(\.md\|\.wiki\)\?)', '\2:   \1', 'g')
    return split(all_links, "\n")
 endfunction
-
-nnoremap <Leader>z :Z<CR>

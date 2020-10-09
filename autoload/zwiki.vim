@@ -12,7 +12,6 @@ fun! zwiki#new_file()
 endfun
 
 fun! zwiki#fzf_insert_link()
-  echom zwiki#path()
   call fzf#run({
         \ 'source': 'rg --no-heading --smart-case "(#+|title:)\s+" ',
         \ 'sink': function('zwiki#make_note_link'),
