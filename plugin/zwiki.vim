@@ -5,7 +5,7 @@ if exists("g:loaded_zwiki") || &cp
 endif
 let g:loaded_zwiki = 1
 
-let s:fzf_rg      = get(g:, 'fzf_rg', "rg --column --no-heading --color=always --smart-case ")
+let s:fzf_rg      = get(g:, 'fzf_rg', "rg --no-heading --color=always --smart-case ")
 let s:fzf_rg_opts = get(g:, 'fzf_rg_opts', '-e --color '.&background. ' --no-hscroll --delimiter : --nth 3..')
 
 " Global Maps:
@@ -40,8 +40,8 @@ endfun
 
 fun! s:fzf_search_zettel()
   call fzf#vim#grep(
-        \ s:fzf_rg . '"^(#{1,2}|title:)\s+" ',
-        \ 1, {'dir': zwiki#path(), 'options': s:fzf_rg_opts }, 0 )
+        \ s:fzf_rg . '"^title:\s+" ',
+        \ 0, fzf#vim#with_preview({'dir': zwiki#path(), 'options': s:fzf_rg_opts }), 0 )
 endfun
 
 function! s:zettel_follow_local_link(line)
@@ -49,18 +49,18 @@ function! s:zettel_follow_local_link(line)
    call vimwiki#base#open_link(":e ", lnk)
 endfunction
 
-function! s:insert_backlinks() abort
+function! s:insert_backlinks()
    let current_fn_id = expand("%:t:r")
    let current_fn    = expand("%:t")
    let pattern       = '(\(.\{-}\)\(\.md\|\.wiki\)\?)'
    let content       = join(readfile(expand("%:t")), "\n")
-   let title_pattern = '^\(title:\|#\{1,2}\)\s\+\(.*\)$'
+   let title_pattern = '^\title:\s\+\(.*\)$'
    let title_line_no = search(title_pattern) 
-   if title_line_no == 0
-      throw "Please add a title to the note!"
-   endif
    let title_line = getline( title_line_no )
    let title = substitute(title_line, title_pattern, '\=submatch(2)', 'n') 
+   if title == ''
+     return 0
+   endif
    let current_link = '[' . title . '](' . current_fn .')'
    let linked_files   = [ ]
    call substitute(content, pattern, '\=add(linked_files, submatch(1) . zwiki#ext())', 'g')

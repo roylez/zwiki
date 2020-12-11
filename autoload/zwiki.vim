@@ -13,7 +13,7 @@ endfun
 
 fun! zwiki#fzf_insert_link()
   call fzf#run({
-        \ 'source': 'rg --no-heading --smart-case "^(#+|title:)\s+" ',
+        \ 'source': 'rg --no-heading --smart-case "^title:\s+" ',
         \ 'sink': function('zwiki#make_note_link'),
         \ 'options': '--margin 15%,0',
         \ 'dir': zwiki#path(),
