@@ -54,10 +54,10 @@ function! s:insert_backlinks()
    let current_fn    = expand("%:t")
    let pattern       = '(\(.\{-}\)\(\.md\|\.wiki\)\?)'
    let content       = join(readfile(expand("%:t")), "\n")
-   let title_pattern = '^\title:\s\+\(.*\)$'
+   let title_pattern = '^title:\s\+\(.*\)$'
    let title_line_no = search(title_pattern) 
    let title_line = getline( title_line_no )
-   let title = substitute(title_line, title_pattern, '\=submatch(2)', 'n') 
+   let title = substitute(title_line, title_pattern, '\=submatch(1)', 'n') 
    if title == ''
      return 0
    endif
