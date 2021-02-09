@@ -10,7 +10,6 @@ let s:fzf_rg_opts = get(g:, 'fzf_rg_opts', '-e --color '.&background. ' --no-hsc
 
 " Global Maps:
 "
-" noremap <silent> <unique> <script> <Plug>AppFunction
 " \ :set lz<CR>:call <SID>AppFunction()<CR>:set nolz<CR>
 command! -nargs=? Znew      :call <sid>new_zettel(<q-args>, 0)
 command! -nargs=? Ztab      :call <sid>new_zettel(<q-args>, 1)
@@ -18,6 +17,7 @@ command!          Z         :call <sid>fzf_search_zettel()
 command!          Zlinks    :call <sid>fzf_get_local_link()
 command!          Zbacklink :call <sid>insert_backlinks()
 
+nnoremap <Leader>z :Z<CR>
 " ------------------------------------------------------------------------------
 
 fun! s:new_zettel(cmd, tab)
