@@ -41,7 +41,7 @@ endfun
 fun! s:fzf_search_zettel()
   call fzf#vim#grep(
         \ s:fzf_rg . '"^title:\s+" ',
-        \ 0, fzf#vim#with_preview({'dir': zwiki#path(), 'options': s:fzf_rg_opts }), 0 )
+        \ 0, fzf#vim#with_preview(fzf#wrap({'dir': zwiki#path(), 'options': s:fzf_rg_opts })), 0 )
 endfun
 
 function! s:zettel_follow_local_link(line)
