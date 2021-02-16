@@ -3,10 +3,13 @@
 if exists("g:loaded_zwiki") || &cp
   finish
 endif
+
 let g:loaded_zwiki = 1
 
-let s:fzf_rg      = get(g:, 'fzf_rg', "rg --no-heading --color=always --smart-case ")
-let s:fzf_rg_opts = get(g:, 'fzf_rg_opts', '-e --color '.&background. ' --no-hscroll --delimiter : --nth 3..')
+let g:zwiki_fzf_defaults = '--reverse --info inline -n 2..'
+let g:zwiki_ext  = get(g:vimwiki_list[0], 'ext')
+let g:zwiki_path = get(g:vimwiki_list[0], 'path')
+let g:zwiki_default_source = 'awk ''FNR < 3 && /^title:\s+/ {$1=""; print FILENAME":",$0; nextfile}'' *' . g:zwiki_ext
 
 " Global Maps:
 "
@@ -30,18 +33,19 @@ fun! s:new_zettel(cmd, tab)
 endfun
 
 fun! s:fzf_get_local_link()
-  call fzf#run({
+  call fzf#run(fzf#wrap({
            \'source': <sid>get_links(),
            \'sink': function("s:zettel_follow_local_link"),
-           \'options': '--margin 15%,0',
-           \'dir': zwiki#path(),
-           \'down':  10})
+           \'options': '--prompt "ZWIKI Links> " ' . g:zwiki_fzf_defaults,
+           \'dir': g:zwiki_path }))
 endfun
 
 fun! s:fzf_search_zettel()
-  call fzf#vim#grep(
-        \ s:fzf_rg . '"^title:\s+" ',
-        \ 0, fzf#vim#with_preview(fzf#wrap({'dir': zwiki#path(), 'options': s:fzf_rg_opts })), 0 )
+  call fzf#run(fzf#wrap({
+           \'source': g:zwiki_default_source,
+           \'sink': function("s:zettel_follow_local_link"),
+           \'options': '--prompt "ZWIKI> " ' . g:zwiki_fzf_defaults,
+           \'dir': g:zwiki_path }))
 endfun
 
 function! s:zettel_follow_local_link(line)
@@ -63,7 +67,7 @@ function! s:insert_backlinks()
    endif
    let current_link = '[' . title . '](' . current_fn .')'
    let linked_files   = [ ]
-   call substitute(content, pattern, '\=add(linked_files, submatch(1) . zwiki#ext())', 'g')
+   call substitute(content, pattern, '\=add(linked_files, submatch(1) . g:zwiki_ext))', 'g')
    call uniq(linked_files)
    call filter(linked_files, 'filereadable(v:val)')
    let unlinked = []
@@ -82,7 +86,7 @@ endfunction
 
 function! s:get_links()
    let @l=""
-   %s/\[.\{-}\](.\{-})/\=setreg('L',submatch(0) . "\n")/n
+   %s/\[[^\]]\{-}\](.\{-})/\=setreg('L',submatch(0) . "\n")/n
    let all_links = substitute(@l, '\[\(.\{-}\)\](\(.\{-}\)\(\.md\|\.wiki\)\?)', '\2:   \1', 'g')
    return split(all_links, "\n")
 endfunction
