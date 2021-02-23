@@ -67,7 +67,7 @@ function! s:insert_backlinks()
    endif
    let current_link = '[' . title . '](' . current_fn .')'
    let linked_files   = [ ]
-   call substitute(content, pattern, '\=add(linked_files, submatch(1) . g:zwiki_ext))', 'g')
+   call substitute(content, pattern, '\=add(linked_files, submatch(1) . g:zwiki_ext)', 'g')
    call uniq(linked_files)
    call filter(linked_files, 'filereadable(v:val)')
    let unlinked = []
