@@ -13,14 +13,26 @@ let g:zwiki_default_source = 'awk ''FNR < 3 && /^title:\s+/ {$1=""; print FILENA
 
 " Global Maps:
 "
-" \ :set lz<CR>:call <SID>AppFunction()<CR>:set nolz<CR>
-command! -nargs=? Znew      :call <sid>new_zettel(<q-args>, 0)
-command! -nargs=? Ztab      :call <sid>new_zettel(<q-args>, 1)
-command!          Z         :call <sid>fzf_search_zettel()
-command!          Zlinks    :call <sid>fzf_get_local_link()
-command!          Zbacklink :call <sid>insert_backlinks()
+command! -nargs=? ZwikiNew      :call <sid>new_zettel(<q-args>, 0)
+command! -nargs=? ZWikiTab      :call <sid>new_zettel(<q-args>, 1)
+command!          Zwiki         :call <sid>fzf_search_zettel()
+command!          ZwikiLinks    :call <sid>fzf_get_local_link()
+command!          ZwikiBacklink :call <sid>insert_backlinks()
 
-nnoremap <Leader>z :Z<CR>
+nnoremap <Leader>z :Zwiki<CR>
+
+augroup vimwiki.zwiki
+   au!
+   au FileType vimwiki inoremap <buffer> [[ <esc>:call zwiki#fzf_insert_link()<CR>'
+   au FileType vimwiki nnoremap <buffer> <Leader>l :ZwikiLinks<CR>
+   au FileType vimwiki vnoremap <buffer> z y:ZwikiTab<CR>p
+augroup END
+
+augroup zwiki
+  au!
+  autocmd BufWritePost ??????-*.md silent :ZwikiBacklink
+augroup END
+" 
 " ------------------------------------------------------------------------------
 
 fun! s:new_zettel(cmd, tab)
