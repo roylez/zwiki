@@ -61,8 +61,8 @@ fun! s:fzf_search_zettel()
 endfun
 
 function! s:zettel_follow_local_link(line)
-   let lnk = split(a:line, ":")[0]
-   call vimwiki#base#open_link(":e ", lnk)
+   let file = split(a:line, ":")[0]
+   call vimwiki#base#edit_file("tabe", file, '')
 endfunction
 
 function! s:insert_backlinks()
