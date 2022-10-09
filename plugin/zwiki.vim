@@ -18,8 +18,10 @@ command! -nargs=? ZwikiNew      :call <sid>new_zettel(<q-args>, 0)
 command! -nargs=? ZwikiTab      :call <sid>new_zettel(<q-args>, 1)
 command!          ZwikiLinks    :call <sid>fzf_get_local_link()
 command!          ZwikiBacklink :call <sid>insert_backlinks()
+command!          ZwikiRead     :call <sid>fzf_read_zettel()
 
 nnoremap <Leader>z :Zwiki<CR>
+nnoremap <Leader>Z :ZwikiRead<CR>
 
 augroup vimwiki.zwiki
    au!
@@ -47,7 +49,7 @@ endfun
 fun! s:fzf_get_local_link()
   call fzf#run(fzf#wrap({
            \'source': <sid>get_links(),
-           \'sink': function("s:zettel_follow_local_link"),
+           \'sink': function("s:fzf_zettel_follow_local_link"),
            \'options': '--prompt "ZWIKI Links> " ' . g:zwiki_fzf_defaults,
            \'dir': g:zwiki_path }))
 endfun
@@ -55,12 +57,25 @@ endfun
 fun! s:fzf_search_zettel()
   call fzf#run(fzf#wrap({
            \'source': g:zwiki_default_source,
-           \'sink': function("s:zettel_follow_local_link"),
+           \'sink': function("s:fzf_zettel_follow_local_link"),
            \'options': '--prompt "ZWIKI> " ' . g:zwiki_fzf_defaults,
            \'dir': g:zwiki_path }))
 endfun
 
-function! s:zettel_follow_local_link(line)
+fun! s:fzf_read_zettel()
+  call fzf#run(fzf#wrap({
+           \'source': g:zwiki_default_source,
+           \'sink': function("s:fzf_zettle_read_file"),
+           \'options': '--prompt "ZWIKI READ> " ' . g:zwiki_fzf_defaults,
+           \'dir': g:zwiki_path }))
+endfun
+
+fun! s:fzf_zettle_read_file(line)
+   let file = split(a:line, ":")[0]
+   execute ':read ' . g:zwiki_path . '/' . file
+endfun
+
+function! s:fzf_zettel_follow_local_link(line)
    let file = split(a:line, ":")[0]
    call vimwiki#base#edit_file("tabe", file, '')
 endfunction
