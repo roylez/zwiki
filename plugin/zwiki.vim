@@ -13,9 +13,9 @@ let g:zwiki_default_source = 'awk ''FNR < 3 && /^title:\s+/ {$1=""; print FILENA
 
 " Global Maps:
 "
-command! -nargs=? ZwikiNew      :call <sid>new_zettel(<q-args>, 0)
-command! -nargs=? ZWikiTab      :call <sid>new_zettel(<q-args>, 1)
 command!          Zwiki         :call <sid>fzf_search_zettel()
+command! -nargs=? ZwikiNew      :call <sid>new_zettel(<q-args>, 0)
+command! -nargs=? ZwikiTab      :call <sid>new_zettel(<q-args>, 1)
 command!          ZwikiLinks    :call <sid>fzf_get_local_link()
 command!          ZwikiBacklink :call <sid>insert_backlinks()
 
