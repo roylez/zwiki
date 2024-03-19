@@ -13,20 +13,16 @@ let g:zwiki_default_source = 'gawk ''FNR < 3 && /^title:\s+/ {$1=""; print FILEN
 
 " Global Maps:
 "
-command!          Zwiki         :call <sid>fzf_search_zettel()
-command! -nargs=? ZwikiNew      :call <sid>new_zettel(<q-args>, 0)
-command! -nargs=? ZwikiTab      :call <sid>new_zettel(<q-args>, 1)
-command!          ZwikiLinks    :call <sid>fzf_get_local_link()
+command!          Zwiki         :lua require('zwiki').search()
+command! -nargs=? ZwikiNew      :lua require('zwiki').new(<q-args>, 0)
+command! -nargs=? ZwikiTab      :lua require('zwiki').new(<q-args>, 1)
 command!          ZwikiBacklink :call <sid>insert_backlinks()
-command!          ZwikiRead     :call <sid>fzf_read_zettel()
 
 nnoremap <Leader>z :Zwiki<CR>
-nnoremap <Leader>Z :ZwikiRead<CR>
 
 augroup vimwiki.zwiki
    au!
-   au FileType vimwiki inoremap <buffer> [[ <esc>:call zwiki#fzf_insert_link()<CR>'
-   au FileType vimwiki nnoremap <buffer> <Leader>l :ZwikiLinks<CR>
+   au FileType vimwiki inoremap <buffer> [[ <esc>:lua require('zwiki').link()<CR>'
    au FileType vimwiki vnoremap <buffer> z y:ZwikiTab<CR>p
 augroup END
 
@@ -34,51 +30,8 @@ augroup zwiki
   au!
   autocmd BufWritePost ??????-*.md silent :ZwikiBacklink
 augroup END
-" 
+"
 " ------------------------------------------------------------------------------
-
-fun! s:new_zettel(cmd, tab)
-  if a:tab == 1
-    let l:e = ':tabe '
-  else
-    let l:e = ':e '
-  endif
-  execute l:e . a:cmd . ' ' . zwiki#new_file() 
-endfun
-
-fun! s:fzf_get_local_link()
-  call fzf#run(fzf#wrap({
-           \'source': <sid>get_links(),
-           \'sink': function("s:fzf_zettel_follow_local_link"),
-           \'options': '--prompt "ZWIKI Links> " ' . g:zwiki_fzf_defaults,
-           \'dir': g:zwiki_path }))
-endfun
-
-fun! s:fzf_search_zettel()
-  call fzf#run(fzf#wrap({
-           \'source': g:zwiki_default_source,
-           \'sink': function("s:fzf_zettel_follow_local_link"),
-           \'options': '--prompt "ZWIKI> " ' . g:zwiki_fzf_defaults,
-           \'dir': g:zwiki_path }))
-endfun
-
-fun! s:fzf_read_zettel()
-  call fzf#run(fzf#wrap({
-           \'source': g:zwiki_default_source,
-           \'sink': function("s:fzf_zettle_read_file"),
-           \'options': '--prompt "ZWIKI READ> " ' . g:zwiki_fzf_defaults,
-           \'dir': g:zwiki_path }))
-endfun
-
-fun! s:fzf_zettle_read_file(line)
-   let file = split(a:line, ":")[0]
-   execute ':read ' . g:zwiki_path . '/' . file
-endfun
-
-function! s:fzf_zettel_follow_local_link(line)
-   let file = split(a:line, ":")[0]
-   call vimwiki#base#edit_file("tabe", file, '')
-endfunction
 
 function! s:insert_backlinks()
    let current_fn_id = expand("%:t:r")
@@ -86,9 +39,9 @@ function! s:insert_backlinks()
    let pattern       = '(\(.\{-}\)\(\.md\|\.wiki\)\?)'
    let content       = join(readfile(expand("%:t")), "\n")
    let title_pattern = '^title:\s\+\(.*\)$'
-   let title_line_no = search(title_pattern) 
+   let title_line_no = search(title_pattern)
    let title_line = getline( title_line_no )
-   let title = substitute(title_line, title_pattern, '\=submatch(1)', 'n') 
+   let title = substitute(title_line, title_pattern, '\=submatch(1)', 'n')
    if title == ''
      return 0
    endif
@@ -109,11 +62,4 @@ function! s:insert_backlinks()
          call writefile(["* " . current_link ], l, "a")
       endif
    endfor
-endfunction
-
-function! s:get_links()
-   let @l=""
-   %s/\[[^\]]\{-}\](.\{-})/\=setreg('L',submatch(0) . "\n")/n
-   let all_links = substitute(@l, '\[\(.\{-}\)\](\(.\{-}\)\(\.md\|\.wiki\)\?)', '\2:   \1', 'g')
-   return split(all_links, "\n")
 endfunction
