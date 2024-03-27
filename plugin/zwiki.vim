@@ -24,13 +24,9 @@ augroup vimwiki.zwiki
    au!
    au FileType vimwiki inoremap <buffer> [[ <esc>:lua require('zwiki').link()<CR>'
    au FileType vimwiki vnoremap <buffer> z y:ZwikiTab<CR>p
+   au FileWritePost ??????-*.md silent :ZwikiBacklink
 augroup END
 
-augroup zwiki
-  au!
-  autocmd BufWritePost ??????-*.md silent :ZwikiBacklink
-augroup END
-"
 " ------------------------------------------------------------------------------
 
 function! s:insert_backlinks()
