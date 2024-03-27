@@ -18,7 +18,7 @@ M.create_link = function(selected, opts)
     local title = string.match(entry.stripped, ".+:%s+(.+)")
     table.insert(links, "[" .. title .. "](" .. id .. ")" )
   end
-  vim.api.nvim_put({ table.concat(links, ", ") }, "", false, true)
+  vim.api.nvim_put({ table.concat(links, ", ") }, "", true, true)
   vim.api.nvim_feedkeys('a', 'n', false)
 end
 
