@@ -20,12 +20,13 @@ command!          ZwikiBacklink :call <sid>insert_backlinks()
 
 nnoremap <Leader>z :Zwiki<CR>
 
-augroup vimwiki.zwiki
-   au!
-   au FileType vimwiki inoremap <buffer> [[ <esc>:lua require('zwiki').link()<CR>'
-   au FileType vimwiki vnoremap <buffer> z y:ZwikiTab<CR>p
-   au FileWritePost ??????-*.md silent :ZwikiBacklink
+augroup zwiki
+  au!
+  au FileType vimwiki inoremap <buffer> [[ <esc>:lua require('zwiki').link()<CR>'
+  au FileType vimwiki vnoremap <buffer> z y:ZwikiTab<CR>p
+  execute 'autocmd! BufWriteCmd ' . '*/??????-*' . g:zwiki_ext . ' ZwikiBacklink'
 augroup END
+
 
 " ------------------------------------------------------------------------------
 
