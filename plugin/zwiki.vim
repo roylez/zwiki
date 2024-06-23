@@ -9,7 +9,7 @@ let g:loaded_zwiki = 1
 let g:zwiki_fzf_defaults = '--reverse --info inline -n 2..'
 let g:zwiki_ext  = get(g:vimwiki_list[0], 'ext')
 let g:zwiki_path = get(g:vimwiki_list[0], 'path')
-let g:zwiki_default_source = 'gawk ''FNR < 3 && /^title:\s+/ {$1=""; print FILENAME":",$0; nextfile}'' *' . g:zwiki_ext
+let g:zwiki_default_source = 'gawk ''FNR < 8 && /^title:\s+/ {$1=""; print FILENAME":",$0; nextfile}'' *' . g:zwiki_ext
 
 " Global Maps:
 "
