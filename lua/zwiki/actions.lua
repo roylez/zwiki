@@ -1,7 +1,7 @@
 local M={}
 
 local actions = require("fzf-lua.actions")
-local utils   = require "fzf-lua.utils"
+local utils   = require("fzf-lua.utils")
 local path    = require("fzf-lua.path")
 
 M.read_file = function(selected, opts)
