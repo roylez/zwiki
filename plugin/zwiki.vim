@@ -1,4 +1,4 @@
-" ------------------------------------------------------------------------------
+" -----------------------------------------------------------------------------
 " Exit when your app has already been loaded (or "compatible" mode set)
 if exists("g:loaded_zwiki") || &cp
   finish
@@ -22,7 +22,7 @@ nnoremap <Leader>z :Zwiki<CR>
 
 augroup zwiki
   au!
-  au FileType vimwiki inoremap <buffer> [[ <esc>:lua require('zwiki').link()<CR>'
+  au FileType vimwiki inoremap <buffer> [[ <esc>:lua require('zwiki').link()<CR>
   au FileType vimwiki vnoremap <buffer> z y:ZwikiTab<CR>p
   execute 'autocmd! BufWritePost ' . '*/??????-*' . g:zwiki_ext . ' ZwikiBacklink'
 augroup END
