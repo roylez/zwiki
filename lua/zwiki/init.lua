@@ -1,15 +1,37 @@
 local M={}
 
+local default_options = {
+  path = nil,
+  fzf_defaults = '--reverse --info inline -n 2..',
+  ext = 'md'
+}
+
 local fzf = require('fzf-lua')
 local default_actions = require("fzf-lua.actions")
 local actions = require("zwiki.actions")
 
+function M.defaults(options)
+    M.options =
+        vim.deepcopy(vim.tbl_deep_extend("keep", options or {}, default_options))
+    return M.options
+end
+
+function M.setup(options)
+  M.options = M.defaults(options or {})
+  M.options.path = vim.fn.resolve(vim.fn.expand(M.options.path))
+  return M.options
+end
+
+local function source_cmd()
+  return [[gawk 'FNR < 8 && /^title:\s+/ {$1=""; print FILENAME":",$0; nextfile}' *.]] .. (M.options and M.options.ext or 'md')
+end
+
 function M.search()
   return fzf.fzf_exec(
-    vim.g.zwiki_default_source ,
+    source_cmd(),
     {
       prompt = 'ZWIKI> ',
-      cwd = vim.g.zwiki_path,
+      cwd = M.options.path,
       previewer = "builtin",
       exec_empty_query = true,
       actions = {
@@ -25,10 +47,10 @@ end
 
 function M.link()
   return fzf.fzf_exec(
-    vim.g.zwiki_default_source ,
+    source_cmd(),
     {
       prompt = 'ZWIKI LINK> ',
-      cwd = vim.g.zwiki_path,
+      cwd = M.options.path,
       previewer = "builtin",
       exec_empty_query = true,
       actions = {
@@ -39,7 +61,7 @@ function M.link()
 end
 
 function M.new(cmd, tab)
-  local fname = vim.g.zwiki_path .. os.date("%y%m%d-%H%M%S") .. vim.g.zwiki_ext
+  local fname = M.options.path .. os.date("%y%m%d-%H%M%S") .. '.' .. M.options.ext
   local edit = tab ~= 0 and "tabe" or "e"
   vim.cmd(edit .. ' ' .. cmd .. ' ' .. fname)
 end
@@ -65,7 +87,7 @@ function M.insert_backlinks()
    let title = substitute(title_line, title_pattern, '\=submatch(1)', 'n')
    let current_link = '[' . title . '](' . current_fn .')'
    let linked_files   = [ ]
-   call substitute(content, pattern, '\=add(linked_files, submatch(1) . g:zwiki_ext)', 'g')
+   call substitute(content, pattern, '\=add(linked_files, submatch(1) . ".md")', 'g')
    call uniq(linked_files)
    call filter(linked_files, 'filereadable(v:val)')
    let unlinked = []
