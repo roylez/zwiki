@@ -61,7 +61,7 @@ function M.link()
 end
 
 function M.new(cmd, tab)
-  local fname = M.options.path .. os.date("%y%m%d-%H%M%S") .. '.' .. M.options.ext
+  local fname = vim.fn.resolve(M.options.path .. "/" .. os.date("%y%m%d-%H%M%S") .. '.' .. M.options.ext)
   local edit = tab ~= 0 and "tabe" or "e"
   vim.cmd(edit .. ' ' .. cmd .. ' ' .. fname)
 end
