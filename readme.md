@@ -1,6 +1,6 @@
 # Zwiki
 
-A Zettelkasten note taking system based on VimWiki. Written in lua for neovim, it depends on vimwiki, fzf-lua, and ripgrep to function.
+A Zettelkasten note taking system that uses markdown. Written in lua for neovim, it depends on fzf-lua, and ripgrep to function.
 
 It only supports markdown syntax and Zettel file names will have a format of
 `YYMMDD-HHMMSS.md`. When saving a file, backlinks will be automatically updated to its
