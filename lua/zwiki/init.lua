@@ -66,6 +66,24 @@ function M.new(cmd, tab)
   vim.cmd(edit .. ' ' .. cmd .. ' ' .. fname)
 end
 
+function M.open_link()
+  local col = vim.fn.col('.')
+  local line = vim.fn.getline('.')
+  local link = ""
+  for i = col,1,-1 do
+    link = line:match("%[.-%]%((.-)%)", i)
+    if link then
+      break
+    end
+  end
+  if not link then return end
+  if link:sub(-3,-1) == '.md' then
+    vim.cmd("edit " .. link)
+  else
+    vim.cmd("edit " .. link .. ".md")
+  end
+end
+
 function M.insert_backlinks()
   local content = vim.api.nvim_buf_get_lines(0, 0, -1, true)
   local title = nil

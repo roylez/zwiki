@@ -37,6 +37,11 @@ vim.api.nvim_create_autocmd("BufEnter", {
     if autocmd_callback() then
       vim.keymap.set('i', '[[', "<esc>:lua require('zwiki').link()<CR>", {buffer=true})
       vim.keymap.set('v', 'z', 'y:ZwikiTab<CR>p', {buffer=true})
+      vim.keymap.set('n', '<CR>',
+        function()
+          require('zwiki').open_link()
+        end,
+        {noremap=true, buffer=true, silent=true})
     end
   end
 })
